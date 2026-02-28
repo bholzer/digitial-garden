@@ -1,0 +1,25 @@
+---
+const navLinks = [
+  { label: 'Projects', href: '/projects' },
+  { label: 'Notes', href: '/notes' },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'About', href: '/about' },
+];
+---
+<header class="w-full py-5">
+  <nav class="mx-auto flex max-w-4xl items-center justify-between px-6">
+    <a href="/" class="font-display text-[17px] font-semibold tracking-tight text-primary transition-colors duration-200 hover:text-accent">
+      bholzer.me
+    </a>
+    <div class="hidden items-center gap-7 sm:flex">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="text-[13px] text-secondary transition-colors duration-200 hover:text-primary"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,44 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  title: string;
+  description: string;
+  tags: string[];
+  icon: string;
+  accent?: string;
+  href?: string;
+}
+
+const { title, description, tags, icon, accent = 'var(--color-accent)', href = '#' } = Astro.props;
+---
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group block rounded-xl border border-subtle bg-surface-raised p-5 transition-all duration-300 hover:border-[#26263a] hover:shadow-lg hover:shadow-black/20"
+>
+  <div class="flex items-center gap-3">
+    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={`background: color-mix(in srgb, ${accent} 15%, transparent)`}>
+      <Icon name={icon} class="h-[18px] w-[18px]" style={`color: ${accent}`} />
+    </div>
+    <h3 class="min-w-0 flex-1 font-display text-[15px] font-semibold text-primary">{title}</h3>
+    <svg
+      class="h-4 w-4 shrink-0 text-muted/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-secondary"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+    </svg>
+  </div>
+  <p class="mt-1.5 text-sm leading-relaxed text-secondary/90">{description}</p>
+  <div class="mt-4 flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <span class="rounded-full border border-subtle bg-subtle/50 px-2.5 py-0.5 text-[11px] tracking-wide text-secondary">
+        {tag}
+      </span>
+    ))}
+  </div>
+</a>

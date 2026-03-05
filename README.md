@@ -5,15 +5,22 @@ Brennan Holzer's personal website and digital garden. Built with Astro 5, Tailwi
 ## Project Structure
 
 ```text
+collections/
+├── posts/              # Blog posts (Markdown/MDX)
+└── projects/           # Project entries (Markdown)
 src/
-├── components/       # Reusable UI components (Header, Footer, SummaryCard)
-├── layouts/          # BaseLayout — shared HTML shell for all pages
+├── components/         # Reusable UI components (Header, Footer, SummaryCard)
+├── data/               # Shared data (socials.ts)
+├── layouts/            # BaseLayout — shared HTML shell for all pages
 ├── pages/
-│   ├── index.astro   # Home page
-│   ├── about.astro   # About page
-│   └── posts/        # Blog post listing and individual post pages
-└── styles/
-    └── global.css    # Tailwind v4 entry point
+│   ├── index.astro     # Home page (featured projects & posts)
+│   ├── about.astro     # Bio, skills, and interests
+│   ├── posts/          # Post listing and detail pages
+│   └── projects/       # Project gallery
+├── styles/
+│   └── global.css      # Tailwind v4 entry point and theme tokens
+└── utils/
+    └── stagger.ts      # Parametric animation delay helper
 ```
 
 ## Development

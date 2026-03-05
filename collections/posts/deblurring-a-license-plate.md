@@ -145,6 +145,10 @@ I could read the plate. Not perfectly - deconvolution can't create detail that w
   <figcaption>The final result. The plate is now (mostly) legible.</figcaption>
 </figure>
 
+## What I learned
+
+The big thing I learned is to think about images as signals when processing. It was possible to see the angle of the blur very clearly in the frequency domain after applying a Fourier transform.
+
 ## How I used AI
 
 I'm not a signal processing expert. I'm a software developer who saw a problem and thought "I bet that's reversible."

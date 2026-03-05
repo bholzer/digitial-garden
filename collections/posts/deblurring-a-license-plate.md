@@ -1,37 +1,37 @@
 ---
-title: "Deblurring a License Plate"
-description: "How I used Richardson-Lucy deconvolution to recover a readable license plate from a motion-blurred hit-and-run photo."
+title: "Unblurring a Hit-and-Run"
+description: "I used math to recover a readable license plate from a motion-blurred photo of a hit-and-run car."
 date: 2026-02-27
 tags: ["python", "image-processing", "signal-processing"]
 draft: false
 ---
 
-Someone local posted about a hit-and-run they were a victim of. They had managed to take a photo of the offender's license plate, but it was badly blurred - a smear of motion blur across the entire image. The plate was completely unreadable.
+**I took a blurred, unreadable photo of a hit-and-run car's license plate and made it legible using an algorithm built for deep-space telescopes.**
 
-I looked closely at the plate hoping to see the characters pop out at me, but all I could see was the blur. I noticed that the blur looked remarkably uniform - not the chaos you usually see from camera shake. The blur appeared linear.
+Someone in my area posted about a hit-and-run. They had a photo of the plate, but it was a smeared mess. You could not read a single letter.
 
-I felt that linear blur should be easy enough to reverse. That reminded me of the ["Mr. Swirl Face" case](https://en.wikipedia.org/wiki/Christopher_Paul_Neil) - a man who obscured his face in photos using a spiral distortion filter, and was eventually identified by law enforcement who simply reversed the distortion. If a transformation well-defined, it can be undone. Linear motion blur is about as well-defined as it gets.
+I zoomed in. The blur was smooth and straight - not the random shake you'd expect from a shaky hand. It looked like pure linear motion. And if the blur follows a clear pattern, you can reverse it.
 
-I felt challenged to see if I could solve this.
+That reminded me of the ["Mr. Swirl Face" case](https://en.wikipedia.org/wiki/Christopher_Paul_Neil). A man hid his face in photos with a spiral filter. Police just reversed the filter. Same idea here: if the math is known, you can undo it.
 
 <figure>
   <img src="../src/images/posts/deblur/blurred.png" alt="Motion-blurred license plate" />
-  <figcaption>The original motion-blurred image. The plate is completely unreadable. (Especially after my censoring)</figcaption>
+  <figcaption>The original blurred image. The plate is unreadable. (Especially after my censoring)</figcaption>
 </figure>
 
-## The math behind motion blur
+## How motion blur works
 
-When a camera captures a moving object (or the camera itself is moving), each point of light gets smeared along the direction of motion. The result is described by a convolution:
+A moving object smears each point of light along its path. That smear is described by a convolution:
 
 > blurred_image = sharp_image * blur_kernel
 
-The **blur kernel** (also called a Point Spread Function, or PSF) is a small image that describes how each point of light gets smeared. For linear motion blur, it's literally just a line - at the angle of motion, with a length proportional to the blur distance.
+The **blur kernel** is a small image that maps how each dot of light gets spread. For straight-line motion blur, the kernel is just a line - at the angle of motion, with a length that matches the blur distance.
 
-If you know the kernel, you can attempt to reverse the process. This is called **deconvolution**.
+If you know the kernel, you can try to undo the blur. That's called **deconvolution**.
 
-## Richardson-Lucy deconvolution
+## The algorithm
 
-Research led me to the [**Richardson-Lucy algorithm**](https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution), an iterative method originally developed for astronomical imaging. It works by repeatedly refining its estimate of the sharp image:
+I found the [**Richardson-Lucy algorithm**](https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution), first built for cleaning up telescope images. It guesses the sharp image, then refines that guess over and over:
 
 ```python
 for _ in range(iterations):
@@ -44,13 +44,13 @@ for _ in range(iterations):
     estimate = estimate * correction
 ```
 
-Each iteration sharpens the result a bit more. The key insight is that this converges toward the **maximum-likelihood estimate** under a Poisson noise model - it's not just heuristic sharpening, it's statistically grounded.
+Each pass sharpens the result. This isn't just a filter - it converges on the most likely sharp image given the blur. It's grounded in statistics.
 
-## Building the blur kernel
+## Building the kernel
 
-The first thing you need is a kernel that matches the actual blur. For linear motion blur, that means two parameters: the **angle** of the motion and the **length** in pixels.
+The kernel needs to match the real blur. For linear motion, that means two values: the **angle** and the **length** in pixels.
 
-I built the kernel by drawing an anti-aliased line at the given angle, using bilinear interpolation to distribute each sample's energy across neighboring pixels:
+I drew an anti-aliased line at the target angle, spreading each sample across nearby pixels with bilinear weights:
 
 ```python
 def create_motion_kernel(length, angle):
@@ -75,35 +75,35 @@ def create_motion_kernel(length, angle):
     return kernel / kernel.sum()
 ```
 
-The anti-aliasing may not be critical, but I felt that jaggead artifacts could result in a poorer end result.
+Anti-aliasing might not be critical, but jagged edges could hurt the end result.
 
 <figure>
   <img src="../src/images/posts/deblur/seed_kernel.png" alt="Straight-line motion blur kernel" />
-  <figcaption>The initial straight-line kernel at 151.5 degrees, 25 pixels long.</figcaption>
+  <figcaption>The starting kernel at 151.5 degrees, 25 pixels long.</figcaption>
 </figure>
 
-## Finding the right blur parameters
+## Finding the right values
 
-The trial and error here was decidedly non-algorithmic. I built a basic tool with blur direction and angle sliders that provided a live view of the deconvolution results, which allowed me to get those values close enough.
+This part was pure trial and error. I built a small tool with sliders for angle and length that showed a live preview of the deblurred result. I dragged sliders until letters started to show up.
 
-Eventually, I settled on an angle of 149.5 with length 25. Suddenly the characters on the plate started to emerge.
+I landed on angle 149.5, length 25. Characters began to emerge.
 
-To validate the angle, I wrote a quick script that analyzed the **power spectrum** of the blurred image. Motion blur creates characteristic dark bands in the frequency domain, perpendicular to the blur direction. Measuring the angle of those bands gave me ~61.5 - the perpendicular complement of the blur direction, which translates to ~151.5. That slight correction from 149.5 to 151.5 did produce a marginally better result.
+To check the angle, I looked at the **power spectrum** of the blurred image. Motion blur leaves dark bands in the frequency domain, at right angles to the blur direction. Those bands pointed to ~61.5 degrees - which means the blur runs at ~151.5. That small shift from 149.5 to 151.5 did help.
 
 <figure>
   <img src="../src/images/posts/deblur/deblurred_seed_kernel.png" alt="Deblurred license plate with initial kernel" />
-  <figcaption>The license plate when deblurred with the initial kernel.</figcaption>
+  <figcaption>The plate deblurred with the starting kernel.</figcaption>
 </figure>
 
 ## Refining the kernel
 
-A straight line with uniform weights is an idealization. Real camera motion has acceleration, deceleration, and slight irregularities. To capture this, I implemented an alternating optimization that refines the kernel itself:
+A perfect straight line is an ideal. Real motion has acceleration and small wobbles. So I let the algorithm refine the kernel itself:
 
-1. **Deconvolve** the image with the current kernel (standard RL)
-2. **Re-estimate the kernel** using the sharp estimate and the blurred image
+1. **Deblur** the image with the current kernel
+2. **Re-estimate the kernel** from the sharp guess and the blurred image
 3. Repeat
 
-The kernel re-estimation uses the same RL math, but with roles swapped - instead of solving for the image with a known kernel, you solve for the kernel with a known image:
+The kernel update uses the same math, but flipped - solve for the kernel given a known image instead of the other way around:
 
 ```python
 def estimate_kernel(blurred, sharp, kernel_size, current_kernel, iterations=10):
@@ -129,31 +129,31 @@ def estimate_kernel(blurred, sharp, kernel_size, current_kernel, iterations=10):
     return kernel
 ```
 
-After 20 rounds of alternation, the kernel delta (change per round) dropped from 0.038 to 0.005. The refined kernel was still essentially a straight line - confirming the blur really was linear motion - but with non-uniform weights along it. The camera was probably accelerating or decelerating during the exposure.
+After 20 rounds, the kernel barely changed between passes. It was still a straight line - the blur really was linear - but the weight along it was no longer even. The camera was likely speeding up or slowing down during the shot.
 
 <figure>
   <img src="../src/images/posts/deblur/refined_kernel.png" alt="Refined kernel after 20 rounds" />
-  <figcaption>The refined kernel after 30 rounds. Still a line, but with non-uniform weight distribution. The weight distribution is subtle, but it matters.</figcaption>
+  <figcaption>The refined kernel after 30 rounds. Still a line, but with uneven weight. The shift is subtle, but it matters.</figcaption>
 </figure>
 
 ## The result
 
-After refinement, I could read the license plate. Not perfectly - deconvolution can recover information but it can't create detail that was never captured. But enough to make out the characters, which was the entire goal. I was able to provide the hit-and-run victim with the license plate of the offending car.
+I could read the plate. Not perfectly - deconvolution can't create detail that was never captured. But enough to make out the characters, which was the whole point. I sent the plate number to the hit-and-run victim.
 
 <figure>
   <img src="../src/images/posts/deblur/deblurred_refined_kernel.png" alt="Deblurred license plate" />
-  <figcaption>The final deblurred result. The plate characters are now (sort of) legible.</figcaption>
+  <figcaption>The final result. The plate is now (mostly) legible.</figcaption>
 </figure>
 
 ## How I used AI
 
-I am not an expert in signal processing or deconvolution theory. I'm a software developer who saw an interesting problem and thought "I bet that can be reversed."
+I'm not a signal processing expert. I'm a software developer who saw a problem and thought "I bet that's reversible."
 
-LLMs helped me bridge the knowledge gaps. They helped explain the math behind Richardson-Lucy. They helped me understand why my FFT-based convolution needed PSF padding. They suggested the mechanisms for iterative kernel refinement when I asked how to push the results further.
+LLMs filled in the gaps. They walked me through the math behind Richardson-Lucy. They told me why my FFT convolution needed padding. They pointed me to kernel refinement when I asked how to push further.
 
-The core ideas - recognizing the blur was reversible, choosing the parameters by visual inspection, iterating on the approach - those were mine. But the implementation speed and the depth of the signal processing would have taken me significantly longer without AI assistance. It turned a multi-week research project into an afternoon.
+The core ideas were mine - spotting the linear blur, tuning the values by eye, choosing to iterate. But AI turned what would have been weeks of research into an afternoon.
 
-I think this is a good example of what AI-assisted development looks like in practice: a human with domain intuition and a specific goal, using AI to fill in the technical details they don't have memorized.
+That's what AI-assisted development looks like: a person with a goal and instincts, using AI to fill in the parts they don't know by heart.
 
 ---
 

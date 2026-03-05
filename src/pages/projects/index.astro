@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createStagger } from '../../utils/stagger';
+
+const allProjects = await getCollection('projects');
+const projects = allProjects;
+
+const delay = createStagger();
+
+const stageColor: Record<string, string> = {
+  'Prototype': '#4b87e8',
+  'Live': '#4dcbae',
+  'Complete': '#8a8a9a',
+};
+
+const activityColor: Record<string, string> = {
+  'Active': '#4dcbae',
+  'Paused': '#e8a84b',
+  'Archived': '#8a8a9a',
+};
+---
+
+<BaseLayout pageTitle="Projects">
+  <section class="mx-auto max-w-4xl px-6 pt-16 pb-32">
+    <!-- Header -->
+    <div class="animate-fade-up" style={delay()}>
+      <!-- <p class="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">
+        <span class="inline-block h-1.5 w-1.5 rounded-full bg-accent"></span>
+        Portfolio
+      </p> -->
+      <h1 class="font-display text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+        Selected Work
+      </h1>
+      <p class="mt-4 max-w-lg text-[15px] leading-relaxed text-secondary/85">
+        A collection of projects I have or am currently working on.
+      </p>
+    </div>
+
+    <!-- Project Grid -->
+    {projects.length > 0 && (
+      <div class="mt-8 grid gap-5 sm:grid-cols-2">
+        {projects.map((project, i) => (
+          <a
+            href={project.data.url ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="animate-fade-up group relative block rounded-xl border border-subtle bg-surface-raised p-5 transition-all duration-300 hover:border-[#26263a] hover:shadow-lg hover:shadow-black/20"
+            style={delay()}
+          >
+            <div class="flex items-center gap-3">
+              {project.data.icon && (
+                <div
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                  style={`background: color-mix(in srgb, ${project.data.accent ?? 'var(--color-accent)'} 12%, transparent)`}
+                >
+                  <Icon
+                    name={project.data.icon}
+                    class="h-4 w-4"
+                    style={`color: ${project.data.accent ?? 'var(--color-accent)'}`}
+                  />
+                </div>
+              )}
+              <div class="min-w-0 flex-1">
+                <h3 class="font-display text-[15px] font-semibold text-primary">
+                  {project.data.name}
+                </h3>
+                {(project.data.stage || project.data.activity) && (
+                  <p class="mt-0.5 flex items-center gap-1.5 text-xs">
+                    {project.data.stage && (
+                      <span style={`color: ${stageColor[project.data.stage] ?? '#8a8a9a'}`}>
+                        {project.data.stage}
+                      </span>
+                    )}
+                    {project.data.stage && project.data.activity && (
+                      <span class="text-muted">·</span>
+                    )}
+                    {project.data.activity && (
+                      <span style={`color: ${activityColor[project.data.activity] ?? '#8a8a9a'}`}>
+                        {project.data.activity}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+              <svg
+                class="h-4 w-4 shrink-0 text-muted/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-secondary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+              </svg>
+            </div>
+
+            <p class="mt-3 text-sm leading-relaxed text-secondary/85">
+              {project.data.description}
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              {project.data.tags.map((tag: string) => (
+                <span class="rounded-md border border-subtle bg-subtle/50 px-2.5 py-0.5 text-[11px] tracking-wide text-secondary">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>

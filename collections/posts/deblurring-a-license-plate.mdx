@@ -4,7 +4,14 @@ description: "I used math to recover a readable license plate from a motion-blur
 date: 2026-02-27
 tags: ["python", "image-processing", "signal-processing"]
 draft: false
+featured: true
 ---
+import { Image } from 'astro:assets';
+import blurred from '../../src/images/posts/deblur/blurred.png';
+import seedKernel from '../../src/images/posts/deblur/seed_kernel.png';
+import deblurredSeedKernel from '../../src/images/posts/deblur/deblurred_seed_kernel.png';
+import refinedKernel from '../../src/images/posts/deblur/refined_kernel.png';
+import deblurredRefinedKernel from '../../src/images/posts/deblur/deblurred_refined_kernel.png';
 
 **I took a blurred, unreadable photo of a hit-and-run car's license plate and made it legible using an algorithm built for deep-space telescopes.**
 
@@ -15,7 +22,7 @@ I zoomed in. The blur was smooth and straight - not the random shake you'd expec
 That reminded me of the ["Mr. Swirl Face" case](https://en.wikipedia.org/wiki/Christopher_Paul_Neil). A man hid his face in photos with a spiral filter. Police just reversed the filter. Same idea here: if the math is known, you can undo it.
 
 <figure>
-  <img src="../src/images/posts/deblur/blurred.png" alt="Motion-blurred license plate" />
+  <Image src={blurred} alt="Motion-blurred license plate" />
   <figcaption>The original blurred image. The plate is unreadable. (Especially after my censoring)</figcaption>
 </figure>
 
@@ -78,7 +85,7 @@ def create_motion_kernel(length, angle):
 Anti-aliasing might not be critical, but jagged edges could hurt the end result.
 
 <figure>
-  <img src="../src/images/posts/deblur/seed_kernel.png" alt="Straight-line motion blur kernel" />
+  <Image src={seedKernel} alt="Straight-line motion blur kernel" />
   <figcaption>The starting kernel at 151.5 degrees, 25 pixels long.</figcaption>
 </figure>
 
@@ -91,7 +98,7 @@ I landed on angle 149.5, length 25. Characters began to emerge.
 To check the angle, I looked at the **power spectrum** of the blurred image. Motion blur leaves dark bands in the frequency domain, at right angles to the blur direction. Those bands pointed to ~61.5 degrees - which means the blur runs at ~151.5. That small shift from 149.5 to 151.5 did help.
 
 <figure>
-  <img src="../src/images/posts/deblur/deblurred_seed_kernel.png" alt="Deblurred license plate with initial kernel" />
+  <Image src={deblurredSeedKernel} alt="Deblurred license plate with initial kernel" />
   <figcaption>The plate deblurred with the starting kernel.</figcaption>
 </figure>
 
@@ -132,7 +139,7 @@ def estimate_kernel(blurred, sharp, kernel_size, current_kernel, iterations=10):
 After 20 rounds, the kernel barely changed between passes. It was still a straight line - the blur really was linear - but the weight along it was no longer even. The camera was likely speeding up or slowing down during the shot.
 
 <figure>
-  <img src="../src/images/posts/deblur/refined_kernel.png" alt="Refined kernel after 20 rounds" />
+  <Image src={refinedKernel} alt="Refined kernel after 20 rounds" />
   <figcaption>The refined kernel after 30 rounds. Still a line, but with uneven weight. The shift is subtle, but it matters.</figcaption>
 </figure>
 
@@ -141,7 +148,7 @@ After 20 rounds, the kernel barely changed between passes. It was still a straig
 I could read the plate. Not perfectly - deconvolution can't create detail that was never captured. But enough to make out the characters, which was the whole point. I sent the plate number to the hit-and-run victim.
 
 <figure>
-  <img src="../src/images/posts/deblur/deblurred_refined_kernel.png" alt="Deblurred license plate" />
+  <Image src={deblurredRefinedKernel} alt="Deblurred license plate" />
   <figcaption>The final result. The plate is now (mostly) legible.</figcaption>
 </figure>
 

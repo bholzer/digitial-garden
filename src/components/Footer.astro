@@ -1,14 +1,14 @@
 ---
+import { socials } from '../data/socials';
+
 const links = [
-  { label: 'GitHub', href: '#' },
-  { label: 'LinkedIn', href: '#' },
-  { label: 'RSS', href: '#' },
+  ...socials,
   { label: 'Email', href: '#' },
 ];
 ---
 <footer class="mt-auto border-t border-subtle/50">
   <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-8">
-    <p class="text-xs text-secondary">&copy; 2024 Alex Chen. Built with precision.</p>
+    <p class="text-xs text-secondary">&copy; {new Date().getFullYear()} Brennan Holzer</p>
     <div class="flex items-center gap-6">
       {links.map((link) => (
         <a

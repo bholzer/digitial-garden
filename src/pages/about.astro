@@ -1,9 +1,136 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const pageTitle = 'About';
+import { Icon } from 'astro-icon/components';
+import { createStagger } from '../utils/stagger';
+
+const delay = createStagger();
+
+const skills: { category: string; items: string[] }[] = [
+  {
+    category: 'Languages',
+    items: ['Ruby', 'JavaScript', 'Python', 'Shell', 'Terraform'],
+  },
+  {
+    category: 'Frameworks & Tools',
+    items: ['Rails', 'React', 'Docker', 'PostgreSQL', 'Elasticsearch', 'Linux'],
+  },
+  {
+    category: 'Cloud & Infrastructure',
+    items: ['AWS', 'Infrastructure as Code', 'CI/CD', 'Observability', 'Security'],
+  },
+];
+
+const interests: { title: string; description: string; icon: string; accent: string }[] = [
+  {
+    title: 'Cloud Infrastructure',
+    description: `
+      Building and maintaining scalable, reliable, and secure cloud infrastructure.
+      Architecting distributed systems that are easy to use.
+    `,
+    icon: 'mdi:cloud',
+    accent: '#4b87e8',
+  },
+  {
+    title: 'Security',
+    description: `
+      Exploring vulnerabilities, exploits, and how to protect against them.
+      Understanding how to break things to understand how to build them better.
+    `,
+    icon: 'mdi:lock',
+    accent: '#4b87e8',
+  },
+  {
+    title: 'Developer Tooling',
+    description: `
+      Creating tools that improve developer workflows. CLIs, build systems, and automation that just works.
+    `,
+    icon: 'mdi:wrench',
+    accent: '#4b87e8',
+  },
+  {
+    title: 'Design & UX',
+    description: 'Appreciating thoughtful interfaces, typography, and the craft of making complex things feel simple.',
+    icon: 'mdi:palette',
+    accent: '#4b87e8',
+  },
+];
 ---
-<BaseLayout pageTitle={pageTitle}>
-  <section class="mx-auto max-w-4xl px-6 pt-16 pb-24">
-    <h1 class="font-display text-4xl font-bold tracking-tight text-primary">About</h1>
+
+<BaseLayout pageTitle="About">
+  <section class="mx-auto max-w-3xl px-6 pt-16 pb-32">
+    <!-- Header -->
+    <div class="animate-fade-up" style={delay()}>
+      <h1 class="font-display text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+        About Me
+      </h1>
+      <div class="mt-4 h-px w-12 bg-secondary/25"></div>
+    </div>
+
+    <!-- Bio -->
+    <div class="animate-fade-up mt-10 space-y-6 text-[15px] leading-[1.8] text-secondary/85" style={delay()}>
+      <p>
+        I'm a maker. Whether it's software, infrastructure, hardware, or something
+        entirely different, I'm drawn to the act of building things well.
+      </p>
+      <p>
+        I've worked across the stack over the years, from frontend interfaces to
+        embedded systems to distributed architectures. It all comes from a drive to
+        learn new skills and then sharpen them — to treat my work as a craft worth
+        honing, not just a means to an end.
+      </p>
+      <p>
+        That same impulse drives how I approach my hobbies. I enjoy creating 3D art, filmmaking,
+        building and flying drones, and playing golf. The subject changes, but the mindset doesn't:
+        find something challenging, dig in, and chase the feeling of improvement.
+      </p>
+    </div>
+
+    <!-- Skills & Technologies -->
+    <div class="animate-fade-up mt-16" style={delay()}>
+      <h2 class="font-display text-2xl font-semibold text-primary">Skills & Technologies</h2>
+
+      <div class="mt-8 space-y-6">
+        {skills.map((group) => (
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-secondary/60">
+              {group.category}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {group.items.map((item) => (
+                <span class="rounded-md bg-subtle px-3 py-1.5 text-sm text-secondary">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Interests & Focus Areas -->
+    <div class="animate-fade-up mt-16" style={delay()}>
+      <h2 class="font-display text-2xl font-semibold text-primary">Interests & Focus Areas</h2>
+
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {interests.map((interest) => (
+          <div class="rounded-xl border border-subtle bg-surface-raised p-5">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                style={`background: color-mix(in srgb, ${interest.accent} 12%, transparent)`}
+              >
+                <Icon name={interest.icon} class="h-[18px] w-[18px]" style={`color: ${interest.accent}`} />
+              </div>
+              <h3 class="font-display text-[15px] font-semibold text-primary">
+                {interest.title}
+              </h3>
+            </div>
+            <p class="mt-3 text-sm leading-relaxed text-secondary/80">
+              {interest.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
   </section>
 </BaseLayout>

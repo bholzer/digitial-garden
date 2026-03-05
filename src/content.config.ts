@@ -11,18 +11,21 @@ const projects = defineCollection({
     icon: z.string().optional(),
     accent: z.string().optional(),
     featured: z.boolean().default(false),
+    stage: z.enum(['Prototype', 'Live', 'Complete']).optional(),
+    activity: z.enum(['Active', 'Paused', 'Archived']).optional(),
     url: z.string().url().optional(),
   }),
 });
 
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './collections/posts' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './collections/posts' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
     tags: z.array(z.string()),
     draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
   }),
 });
 

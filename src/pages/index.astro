@@ -1,42 +1,49 @@
 ---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SummaryCard from '../components/SummaryCard.astro';
+import { socials } from '../data/socials';
+import { createStagger } from '../utils/stagger';
+
 const name = 'Brennan Holzer';
+
+const projects = (await getCollection('projects')).filter((p) => p.data.featured);
+
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft && post.data.featured)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const delay = createStagger();
 ---
 <BaseLayout pageTitle={name}>
   <!-- Hero -->
   <section class="mx-auto max-w-4xl px-6 pt-16 pb-24">
-    <h1 class="animate-fade-up font-display text-5xl font-bold tracking-tight text-primary sm:text-[3.5rem]">
+    <h1 class="animate-fade-up font-display text-5xl font-bold tracking-tight text-primary sm:text-[3.5rem]" style={delay()}>
       {name}
     </h1>
     <p
       class="animate-fade-up mt-4 font-display text-xl text-secondary/85 sm:text-[1.35rem]"
-      style="animation-delay: 80ms"
+      style={delay()}
     >
-      Software developer, engineer, maker.
+      Generalist. Maker. Obsessed with craft.
     </p>
 
-    <div class="animate-fade-up mt-8 h-px w-12 bg-secondary/25" style="animation-delay: 160ms"></div>
+    <div class="animate-fade-up mt-8 h-px w-12 bg-secondary/25" style={delay()}></div>
 
-    <p class="animate-fade-up mt-8 max-w-lg text-[15px] leading-[1.7] text-secondary/85" style="animation-delay: 240ms">
-      I build digital tools that prioritize simplicity and performance. Currently exploring
-      distributed systems and cultivating a digital garden of thoughts on software
-      craftsmanship.
+    <p class="animate-fade-up mt-8 max-w-lg text-[15px] leading-[1.7] text-secondary/85" style={delay()}>
+      Whether software, infrastructure, data, or hardware — I am drawn to where interesting
+      problems are. I care about how things are built, not just that they ship.
+      This is where I think out loud about the things I am working on.
     </p>
 
     <!-- Social icons -->
     <div
       class="animate-fade-up mt-8 flex items-center gap-5"
-      style="animation-delay: 320ms"
+      style={delay()}
     >
-      <a href="#" class="text-secondary transition-colors duration-200 hover:text-primary" aria-label="GitHub">
+      <a href={socials.find((s) => s.label === 'GitHub')?.href} class="text-secondary transition-colors duration-200 hover:text-primary" aria-label="GitHub">
         <svg class="h-[18px] w-[18px]" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-      </a>
-      <a href="#" class="text-secondary transition-colors duration-200 hover:text-primary" aria-label="Twitter">
-        <svg class="h-[18px] w-[18px]" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
         </svg>
       </a>
       <a href="mailto:hello@example.com" class="text-secondary transition-colors duration-200 hover:text-primary" aria-label="Email">
@@ -48,47 +55,109 @@ const name = 'Brennan Holzer';
   </section>
 
   <!-- Selected Projects -->
-  <!-- <section class="mx-auto max-w-4xl px-6 pb-32">
-    <div class="mb-6 flex items-center justify-between">
-      <h2 class="font-display text-xl font-semibold text-primary">Selected Projects</h2>
-      <a
-        href="/projects"
-        class="flex items-center gap-1.5 text-sm text-secondary transition-colors duration-200 hover:text-primary"
-      >
-        View all
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </a>
-    </div>
+  {projects.length > 0 && (
+    <section class="mx-auto max-w-4xl px-6 pb-20">
+      <div class="animate-fade-up flex items-center justify-between" style={delay()}>
+        <h2 class="font-display text-xl font-semibold text-primary">Selected Projects</h2>
+        <a
+          href="/projects"
+          class="flex items-center gap-1.5 text-sm text-secondary transition-colors duration-200 hover:text-primary"
+        >
+          View all
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <SummaryCard
-        title="Paradigm CLI"
-        description="A command-line interface for managing cloud infrastructure with minimal configuration."
-        tags={['Rust', 'AWS']}
-        icon="mdi:home"
-        accent="#4b87e8"
-        href="#"
-      />
+      <div class="mt-5 flex flex-wrap gap-4">
+        {projects.map((project, i) => (
+          <a
+            href={project.data.url ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="animate-fade-up group block min-w-[280px] flex-1 rounded-xl border border-subtle bg-surface-raised p-5 transition-all duration-300 hover:border-[#26263a] hover:shadow-lg hover:shadow-black/20"
+            style={delay()}
+          >
+            <div class="flex items-center gap-3">
+              {project.data.icon && (
+                <div
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                  style={`background: color-mix(in srgb, ${project.data.accent ?? 'var(--color-accent)'} 12%, transparent)`}
+                >
+                  <Icon
+                    name={project.data.icon}
+                    class="h-4 w-4"
+                    style={`color: ${project.data.accent ?? 'var(--color-accent)'}`}
+                  />
+                </div>
+              )}
+              <h3 class="min-w-0 flex-1 font-display text-[15px] font-semibold text-primary">
+                {project.data.name}
+              </h3>
+              <svg
+                class="h-4 w-4 shrink-0 text-muted/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-secondary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+              </svg>
+            </div>
+            <p class="mt-2 text-sm leading-relaxed text-secondary/85 line-clamp-2">
+              {project.data.description}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {project.data.tags.map((tag: string) => (
+                <span class="rounded-md border border-subtle bg-subtle/50 px-2.5 py-0.5 text-[11px] tracking-wide text-secondary">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 
-      <SummaryCard
-        title="Voxel Editor"
-        description="Web-based 3D voxel editor with real-time collaboration features and export capabilities."
-        tags={['Three.js', 'WebSockets']}
-        icon="mdi:cube-outline"
-        accent="#7c6bea"
-        href="#"
-      />
+  <!-- Recent Posts -->
+  {posts.length > 0 && (
+    <section class="mx-auto max-w-4xl px-6 pb-32">
+      <div class="animate-fade-up flex items-center justify-between" style={delay()}>
+        <h2 class="font-display text-xl font-semibold text-primary">Selected Posts</h2>
+        <a
+          href="/posts"
+          class="flex items-center gap-1.5 text-sm text-secondary transition-colors duration-200 hover:text-primary"
+        >
+          View all
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
 
-      <SummaryCard
-        title="Metric Flow"
-        description="Lightweight analytics dashboard for privacy-focused personal websites."
-        tags={['TypeScript', 'Next.js']}
-        icon="mdi:chart-line"
-        accent="#4dcbae"
-        href="#"
-      />
-    </div>
-  </section> -->
+      <div class="mt-5 divide-y divide-subtle/60">
+        {posts.map((post, i) => (
+          <a
+            href={`/posts/${post.id}`}
+            class="animate-fade-up group block py-5 first:pt-0"
+            style={delay()}
+          >
+            <div class="flex items-baseline justify-between gap-4">
+              <h3 class="font-display text-[15px] font-semibold text-primary transition-colors duration-200 group-hover:text-accent">
+                {post.data.title}
+              </h3>
+              <time class="shrink-0 text-xs text-muted">
+                {post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </time>
+            </div>
+            <p class="mt-1 text-sm leading-relaxed text-secondary/75">
+              {post.data.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>

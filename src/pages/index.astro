@@ -73,9 +73,7 @@ const delay = createStagger();
       <div class="mt-5 flex flex-wrap gap-4">
         {projects.map((project, i) => (
           <a
-            href={project.data.url ?? '#'}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/projects/${project.id}`}
             class="animate-fade-up group block min-w-[280px] flex-1 rounded-xl border border-subtle bg-surface-raised p-5 transition-all duration-300 hover:border-[#26263a] hover:shadow-lg hover:shadow-black/20"
             style={delay()}
           >

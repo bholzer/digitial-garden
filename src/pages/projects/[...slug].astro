@@ -1,0 +1,113 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const stageColor: Record<string, string> = {
+  'Prototype': '#4b87e8',
+  'Live': '#4dcbae',
+  'Complete': '#8a8a9a',
+};
+
+const activityColor: Record<string, string> = {
+  'Active': '#4dcbae',
+  'Paused': '#e8a84b',
+  'Archived': '#8a8a9a',
+};
+---
+<BaseLayout pageTitle={project.data.name}>
+  <article class="mx-auto max-w-3xl px-6 pt-16 pb-32">
+    <header class="mb-12">
+      <div class="flex items-center gap-3">
+        {project.data.icon && (
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+            style={`background: color-mix(in srgb, ${project.data.accent ?? 'var(--color-accent)'} 12%, transparent)`}
+          >
+            <Icon
+              name={project.data.icon}
+              class="h-5 w-5"
+              style={`color: ${project.data.accent ?? 'var(--color-accent)'}`}
+            />
+          </div>
+        )}
+        <h1 class="font-display text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+          {project.data.name}
+        </h1>
+      </div>
+      <p class="mt-4 text-lg text-secondary/85">{project.data.description}</p>
+
+      <div class="mt-4 flex items-center gap-4">
+        {(project.data.stage || project.data.activity) && (
+          <p class="flex items-center gap-1.5 text-sm">
+            {project.data.stage && (
+              <span style={`color: ${stageColor[project.data.stage] ?? '#8a8a9a'}`}>
+                {project.data.stage}
+              </span>
+            )}
+            {project.data.stage && project.data.activity && (
+              <span class="text-muted">&middot;</span>
+            )}
+            {project.data.activity && (
+              <span style={`color: ${activityColor[project.data.activity] ?? '#8a8a9a'}`}>
+                {project.data.activity}
+              </span>
+            )}
+          </p>
+        )}
+        {project.data.github && (
+          <a
+            href={project.data.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 rounded-full border border-subtle bg-subtle/50 px-3 py-1 text-xs text-secondary transition-colors hover:border-[#26263a] hover:text-primary"
+          >
+            <Icon name="mdi:github" class="h-4 w-4" />
+            GitHub
+          </a>
+        )}
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        {project.data.tags.map((tag: string) => (
+          <span class="rounded-full bg-subtle px-3 py-1 text-xs text-secondary">{tag}</span>
+        ))}
+      </div>
+      <div class="mt-8 h-px bg-secondary/15"></div>
+    </header>
+
+    <div class="prose prose-invert max-w-none prose-headings:font-display prose-headings:text-primary prose-p:text-secondary prose-a:text-accent hover:prose-a:text-primary prose-strong:text-primary prose-pre:border prose-pre:border-subtle prose-pre:bg-surface-raised prose-blockquote:border-accent prose-img:mx-auto prose-img:rounded-lg prose-hr:border-subtle prose-li:text-secondary">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .prose :not(pre) > code {
+    background: var(--color-subtle);
+    color: var(--color-secondary);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+
+  .prose figcaption {
+    text-align: center;
+  }
+
+  .prose pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+  }
+</style>

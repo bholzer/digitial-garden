@@ -11,6 +11,7 @@ const navLinks = [
     <a href="/" class="font-display text-[17px] font-semibold tracking-tight text-primary transition-colors duration-200 hover:text-accent">
       bholzer.me
     </a>
+    <!-- Desktop nav -->
     <div class="hidden items-center gap-7 sm:flex">
       {navLinks.map((link) => (
         <a
@@ -21,5 +22,53 @@ const navLinks = [
         </a>
       ))}
     </div>
+    <!-- Mobile hamburger button -->
+    <button
+      id="mobile-menu-btn"
+      class="flex items-center justify-center sm:hidden"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <svg id="hamburger-icon" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <line x1="4" y1="7" x2="20" y2="7" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="17" x2="20" y2="17" />
+      </svg>
+      <svg id="close-icon" class="hidden h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="6" y1="18" x2="18" y2="6" />
+      </svg>
+    </button>
   </nav>
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="hidden overflow-hidden sm:hidden"
+  >
+    <div class="mx-auto flex max-w-4xl flex-col gap-4 px-6 pb-4 pt-3">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="text-[14px] text-secondary transition-colors duration-200 hover:text-primary"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
 </header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const hamburgerIcon = document.getElementById('hamburger-icon')!;
+  const closeIcon = document.getElementById('close-icon')!;
+
+  btn.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('hidden');
+    // isOpen is true when 'hidden' was just added (menu closing)
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    hamburgerIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  });
+</script>

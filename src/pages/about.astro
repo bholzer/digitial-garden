@@ -56,7 +56,22 @@ const interests: { title: string; description: string; icon: string; accent: str
 ];
 ---
 
-<BaseLayout pageTitle="About">
+<BaseLayout
+  pageTitle="About — Brennan Holzer"
+  description="Software generalist and maker working across the stack — from frontend interfaces to distributed infrastructure. Passionate about cloud infrastructure, security, developer tooling, and design."
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Brennan Holzer',
+    url: import.meta.env.SITE ?? '',
+    jobTitle: 'Software Engineer',
+    knowsAbout: ['Cloud Infrastructure', 'Security', 'Developer Tooling', 'Ruby', 'JavaScript', 'Python', 'AWS', 'React', 'Rails'],
+    sameAs: [
+      'https://github.com/bholzer',
+      'https://www.linkedin.com/in/brennan-holzer-ab559664/',
+    ],
+  }}
+>
   <section class="mx-auto max-w-3xl px-6 pt-16 pb-32">
     <!-- Header -->
     <div class="animate-fade-up" style={delay()}>

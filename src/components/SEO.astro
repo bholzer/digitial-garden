@@ -1,0 +1,67 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  publishedDate?: Date;
+  modifiedDate?: Date;
+  tags?: string[];
+  jsonLd?: Record<string, unknown>;
+}
+
+const siteUrl = import.meta.env.SITE ?? '';
+const siteName = 'Brennan Holzer';
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/og-default.png',
+  ogType = 'website',
+  publishedDate,
+  modifiedDate,
+  tags = [],
+  jsonLd,
+} = Astro.props;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, siteUrl).href;
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, siteUrl).href;
+---
+
+<!-- Primary Meta Tags -->
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content={siteName} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+{publishedDate && (
+  <meta property="article:published_time" content={publishedDate.toISOString()} />
+)}
+{modifiedDate && (
+  <meta property="article:modified_time" content={modifiedDate.toISOString()} />
+)}
+{tags.map((tag) => (
+  <meta property="article:tag" content={tag} />
+))}
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title={siteName} href={new URL('/rss.xml', siteUrl).href} />
+
+<!-- JSON-LD Structured Data -->
+{jsonLd && (
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+)}

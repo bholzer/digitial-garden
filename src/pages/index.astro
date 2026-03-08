@@ -14,8 +14,31 @@ const posts = (await getCollection('posts'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const delay = createStagger();
+
+const siteUrl = import.meta.env.SITE ?? '';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Brennan Holzer',
+  url: siteUrl,
+  description: 'Generalist. Maker. Obsessed with craft. Writings about software, infrastructure, security, and building things.',
+  author: {
+    '@type': 'Person',
+    name: 'Brennan Holzer',
+    url: siteUrl,
+    sameAs: [
+      'https://github.com/bholzer',
+      'https://www.linkedin.com/in/brennan-holzer-ab559664/',
+    ],
+  },
+};
 ---
-<BaseLayout pageTitle={name}>
+<BaseLayout
+  pageTitle={name}
+  description="Generalist. Maker. Obsessed with craft. Writings about software, infrastructure, security, and building things."
+  jsonLd={jsonLd}
+>
   <!-- Hero -->
   <section class="mx-auto max-w-4xl px-6 pt-16 pb-24">
     <h1 class="animate-fade-up font-display text-5xl font-bold tracking-tight text-primary sm:text-[3.5rem]" style={delay()}>

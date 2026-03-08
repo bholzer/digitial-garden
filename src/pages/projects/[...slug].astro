@@ -14,6 +14,22 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 
+const siteUrl = import.meta.env.SITE ?? '';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.data.name,
+  description: project.data.description,
+  url: new URL(`/projects/${project.id}/`, siteUrl).href,
+  author: {
+    '@type': 'Person',
+    name: 'Brennan Holzer',
+    url: siteUrl,
+  },
+  keywords: project.data.tags.join(', '),
+};
+
 const stageColor: Record<string, string> = {
   'Prototype': '#4b87e8',
   'Live': '#4dcbae',
@@ -26,7 +42,12 @@ const activityColor: Record<string, string> = {
   'Archived': '#8a8a9a',
 };
 ---
-<BaseLayout pageTitle={project.data.name}>
+<BaseLayout
+  pageTitle={`${project.data.name} — Brennan Holzer`}
+  description={project.data.description}
+  tags={project.data.tags}
+  jsonLd={jsonLd}
+>
   <article class="mx-auto max-w-3xl px-6 pt-16 pb-32">
     <header class="mb-12">
       <div class="flex items-center gap-3">

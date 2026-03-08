@@ -1,0 +1,12 @@
+# Brennan Holzer
+
+> Personal site of Brennan Holzer — software generalist and maker. Writings about software engineering, cloud infrastructure, security, developer tooling, and the craft of building things.
+
+## About
+- [About](https://brennanholzer.com/about): Background, skills, and interests
+
+## Posts
+- [Posts](https://brennanholzer.com/posts): Writings about projects and things I find interesting
+
+## Projects
+- [Projects](https://brennanholzer.com/projects): Software, infrastructure, and hardware projects

@@ -1,8 +1,30 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import SEO from '../components/SEO.astro';
 import '../styles/global.css';
-const { pageTitle } = Astro.props;
+
+export interface Props {
+  pageTitle: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  publishedDate?: Date;
+  modifiedDate?: Date;
+  tags?: string[];
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  pageTitle,
+  description = 'Generalist. Maker. Obsessed with craft. Writings about software, infrastructure, security, and building things.',
+  ogImage,
+  ogType,
+  publishedDate,
+  modifiedDate,
+  tags,
+  jsonLd,
+} = Astro.props;
 ---
 <html lang="en">
   <head>
@@ -24,6 +46,16 @@ const { pageTitle } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{pageTitle}</title>
+    <SEO
+      title={pageTitle}
+      description={description}
+      ogImage={ogImage}
+      ogType={ogType}
+      publishedDate={publishedDate}
+      modifiedDate={modifiedDate}
+      tags={tags}
+      jsonLd={jsonLd}
+    />
   </head>
   <body class="flex min-h-screen flex-col bg-surface font-body text-secondary antialiased">
     <Header />
